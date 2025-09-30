@@ -1,0 +1,273 @@
+Project Overview
+Create a comprehensive SaaS School Management System called iSMS using React (optimized for React GO mobile deployment), Node.js, and modern web technologies. This will be a multi-module platform with role-based access control.
+IMPORTANT: Structure the entire application with React components and responsive design patterns that are fully compatible with React GO for seamless mobile app deployment. Use React hooks, context, and mobile-friendly UI patterns throughout.
+Step 1: Setup and Design Guide Creation
+First, create a DESIGN_GUIDE.md file in the project root that contains the complete design system specifications. This file will be your reference and should be updated as we develop new components.
+Design System Specifications:
+Colors
+:root {
+  /* Background Colors */
+  --bg-main: #F5FEFE;
+  --bg-section: #FFFFFF;
+  
+  /* Primary Colors */
+  --primary-main: #F7AD19;
+  --primary-hover: #E69A0C;
+  --selected-nav: #004D61;
+  
+  /* Typography */
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  /* Borders */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+}
+Grid System (React GO Responsive)
+•	Desktop: 240px sidebar (collapsible to 80px) + dynamic content area
+•	Tablet: Responsive sidebar that adapts to screen size
+•	Mobile: Bottom navigation (60px height) with hamburger menu
+•	Main background: #F5FEFE
+•	Content sections: White (#FFFFFF)
+•	Touch Targets: Minimum 44px for all interactive elements (React GO requirement)
+•	Responsive Breakpoints: Use CSS-in-JS or CSS modules with mobile-first approach
+Typography
+•	Font Family: 'Inter', sans-serif
+•	Use the spacing and typography scales from the design guide
+Step 2: Project Structure (React GO Compatible)
+Create the following folder structure optimized for React GO deployment:
+/src
+  /components
+    /ui (reusable mobile-friendly components)
+    /layout (responsive layout components)
+    /forms (touch-optimized form components)
+    /navigation (mobile/desktop navigation)
+  /pages
+  /hooks (custom React hooks)
+  /utils
+  /context (React Context for state management)
+  /data
+  /styles (CSS modules or styled-components)
+/public
+DESIGN_GUIDE.md
+package.json (ensure React GO compatibility)
+React GO Specific Considerations:
+•	Use React functional components with hooks throughout
+•	Implement responsive design with CSS-in-JS or CSS modules
+•	Use React Context for global state management (avoid external state libraries initially)
+•	Ensure all components are touch-friendly with proper touch targets (minimum 44px)
+•	Implement proper loading states and error boundaries
+Step 3: Authentication System (React Context + Hooks)
+Create a complete authentication system using React Context and hooks for React GO compatibility:
+Authentication Context Structure:
+// AuthContext.js
+const AuthContext = createContext();
+const useAuth = () => useContext(AuthContext);
+
+// Features:
+- Login/logout functionality
+- User session persistence
+- Role-based route protection
+- Loading and error states
+Users Database (for initial development - store in JSON/local storage):
+[
+  {"email": "cck@iyad.sg", "name": "CCK", "dept": "CCK", "userType": "HOD"},
+  {"email": "je@iyad.sg", "name": "JE", "dept": "JE", "userType": "HOD"},
+  {"email": "hg@iyad.sg", "name": "HG", "dept": "HG", "userType": "HOD"},
+  {"email": "hq@iyad.sg", "name": "HQ", "dept": "HQ", "userType": "HOD"},
+  {"email": "admin@iyad.sg", "name": "Admin", "dept": "Admin", "userType": "Master Admin"}
+]
+Routes (React Router v6 for React GO):
+•	/login - Mobile-optimized login page
+•	/home - Responsive home dashboard (protected route)
+•	/apps/:appName - Dynamic app routes
+•	Use React Router v6 with proper route protection and loading states
+Step 4: Main Layout and Navigation (React Components)
+Responsive Layout Component Structure:
+// Layout.jsx - Main responsive layout
+// Sidebar.jsx - Desktop/tablet sidebar
+// MobileNav.jsx - Mobile bottom navigation  
+// Header.jsx - Top header component
+Desktop Sidebar Navigation (240px width, collapsible to 80px):
+Implementation: Use React state and CSS transitions for smooth collapse animation iSMS Platform UI & Module Requirements
+Theme / Styling:
+•	Left Sidebar Selected Button: #004D61
+•	Main CTA Button: Primary #F7AD19, Secondary: White
+Overview:
+iSMS consists of multiple modules called Apps, all accessible via the left sidebar. Each module integrates seamlessly with the central iSMS platform, providing role-based access control and comprehensive reporting capabilities.
+________________________________________
+Left Sidebar Structure
+1. Home
+•	Displays a grid of Apps (3 per row).
+•	The top-left App shows the most recently opened.
+•	Add a faint separator line, then label the section: Apps.
+2. Forms
+•	Similar to Microsoft Forms.
+•	Allows creation, management, and sharing of digital forms for internal and parent use.
+3. Events
+•	Manage and track event attendance, with check-in/check-out functionality.
+•	Ideal for school events, workshops, and internal meetings.
+4. SOP
+•	Document management system for SOPs.
+•	Features: version control, digital acknowledgment, change tracking, and AI-powered chat assistant for policy queries.
+5. Asset & Inventory
+•	Track school resources, equipment, and maintenance schedules.
+•	Provides alerts for low stock, maintenance due dates, and asset history logs.
+6. LNA (Learning Needs Analysis)
+•	Evaluate Technical Skills Competencies (TSCs) of staff.
+•	Supports skill gap analysis and personalized training recommendations.
+7. IPDM
+•	Staff training & professional development tracker.
+•	Manages certifications, skills assessments, and development progress.
+8. Career Development
+•	Create career development plans, succession planning, and talent management tracking.
+•	Supports employee growth and long-term planning.
+9. Survey Analyser
+•	Complete survey management and analysis system.
+•	Features: CSV upload, automated SLS scoring, PDF reports, and interactive data visualizations.
+10. Incident Reporting
+•	Structured incident reporting system.
+•	Supports image uploads, corrective action tracking, and automated PDF reports for safety management.
+Add faint separator line, label section: Dashboards
+11. Finance
+•	Financial management system with income/expense tracking, departmental analysis, interactive charts, and budget variance monitoring.
+12. Human Resource
+•	Manage employee records, leave, payroll, and performance appraisals.
+•	Supports HR analytics and staff lifecycle management.
+13. Operations
+•	Oversee school operations and surveys.
+•	Submodules:
+a. Parents Satisfaction Survey
+b. Staff Satisfaction Survey
+c. DSLS & EI Satisfaction Survey
+d. Enrichments Survey
+14. Comms & Media
+•	Centralized communications hub for newsletters, announcements, social media scheduling, and media assets.
+15. Early Intervention
+•	Manage early intervention programs, student tracking, and specialized educational services.
+Add faint separator line, label section: Settings
+16. Admin Console
+•	Table listing users:
+| Email | Name | Dept | User Type |
+|-------|------|------|-----------|
+| cck@iyad.sg | CCK | CCK | HOD |
+| je@iyad.sg | JE | JE | HOD |
+| hg@iyad.sg | HG | HG | HOD |
+| hq@iyad.sg | HQ | HQ | HOD |
+| admin@iyad.sg | Admin | Admin | Master Admin |
+•	Master Admin: Creator / full permissions.
+•	Create login page (/login) → redirects to /home after login.
+17. Roles & Permissions
+•	Table to define user types and permissions per module.
+•	Create user types for role-based access control.
+________________________________________
+Upcoming Apps Feature
+•	For modules Events and onward, display “Upcoming” badge.
+•	On click, show popup:
+“The <App Name> app is currently in development. You will be notified once it’s ready.”
+•	Primary CTA: “Ok”
+•	Clicking outside closes the popup.
+________________________________________
+AI Form Builder (Research & Prototype)
+•	Replicate Jotform functionality, adding AI-assisted form creation.
+•	Parent Satisfaction Survey Flow:
+1.	Enter child’s Birth Certificate number.
+2.	Auto-populate child’s name, center, level.
+3.	Options: Next or Add Child (multiple children supported).
+4.	Questions management:
+	Branching: Apply conditions per Center / Level.
+	Duplicate questions for efficiency.
+5.	End user enters responses once for questions without branching.
+6.	For branching questions, responses are per child sequentially.
+•	Upload Respondents List:
+| Birth Cert Number | Name | Center | Level |
+
+
+AI Form Builder – iSMS Sitemap & Workflow
+1. Entry / Dashboard
+URL: /home/forms/ai-builder
+Sections:
+1.	My Forms – List of all forms created.
+o	Columns: Form Name | Created Date | Last Edited | Status | Actions (Edit / Delete / Preview)
+2.	Create New Form – Button → Opens Form Creation Wizard
+3.	Templates / Suggested Forms – Pre-built forms (optional, AI-assisted suggestions)
+________________________________________
+2. Form Creation Wizard
+Step 1: Form Setup
+•	Form Name
+•	Description
+•	Form Type: Parent Survey, Staff Survey, Event Feedback, etc.
+•	Target Audience: Center / Level selection (optional)
+•	AI Suggestions: Generate question templates based on form type
+CTA Buttons: Next / Cancel
+________________________________________
+Step 2: Respondent Management
+•	Option 1: Manual entry (Birth Cert Number / Staff ID / Email)
+•	Option 2: CSV Upload (Bulk import)
+•	Table:
+| Birth Cert Number | Name | Center | Level |
+•	Add Child / Add Respondent button (supports multiple entries)
+________________________________________
+Step 3: Question Management
+•	Add Question button → Opens modal:
+o	Question Text
+o	Question Type: Single Choice, Multiple Choice, Text, Rating, Date
+o	Branching Toggle: Yes / No
+	If Yes, set Condition: Center / Level
+o	Duplicate Question button (to reuse same setup)
+o	AI Suggestions: Auto-suggest options based on question type
+•	Preview Question – See how it appears to respondents
+•	Question Table View:
+| # | Question | Type | Branching | Center | Level | Actions (Edit / Duplicate / Delete) |
+________________________________________
+Step 4: Branching Logic Flow
+•	When Branching is enabled:
+o	End user sees questions per child sequentially.
+o	Responses stored per child.
+o	If multiple children, the same question repeats for each child automatically.
+Visual Flow Example:
+Question 1 (No Branching) → answered once
+Question 2 (Branching Yes, Child 1) → answered
+Question 2 (Branching Yes, Child 2) → answered
+Question 3 (No Branching) → answered once
+________________________________________
+Step 5: Form Settings
+•	Response Collection Options: Single response / Multiple responses
+•	Notifications: Email or in-app notifications on new responses
+•	Deadline / Active Dates
+•	Access Control: Role-based visibility (e.g., only HQ, CCK, HG users)
+•	PDF / CSV Export Options
+________________________________________
+Step 6: Preview & Publish
+•	Full preview mode (desktop & mobile simulation)
+•	Publish button → Form goes live
+•	Option to Save as Draft
+________________________________________
+3. End-User Experience
+URL: /forms/respond
+Steps:
+1.	Enter Birth Cert Number (auto-populates Name, Center, Level)
+2.	Select/Add Child (if multiple children)
+3.	Go through questions sequentially, respecting branching logic
+4.	Submit form → Thank You Page
+5.	Admin receives notification and response stored in database
+________________________________________
+4. Admin / Form Creator Dashboard
+•	Responses Tab:
+o	Table view per form
+o	Filter by Center / Level / Child
+o	Export to CSV / PDF
+o	Visual Dashboard: Charts, scores, completion rates
+•	Analytics Tab:
+o	Automated scoring (SLS or other metrics)
+o	Cross-center comparison
+o	Branching logic impact report
+________________________________________
+5. Key Features / Notes
+•	AI Assistance: Suggests question text, options, and branching logic
+•	Branching Logic: Works at child-level granularity
+•	Bulk Respondents Upload: Supports CSV with child mapping
+•	Form Duplication: Easy to replicate forms across centers
+•	Role-Based Access: Only authorized users can edit, publish, or view responses
+

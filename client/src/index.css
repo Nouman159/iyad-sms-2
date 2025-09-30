@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://releases.transloadit.com/uppy/v4.3.0/uppy.min.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* iSMS Custom Color Variables */
+  --bg-main: hsl(180, 40%, 96%);
+  --bg-section: hsl(0, 0%, 100%);
+  --primary-main: hsl(42, 93%, 54%);
+  --primary-hover: hsl(42, 93%, 48%);
+  --selected-nav: hsl(193, 100%, 19%);
+  --text-primary: hsl(0, 0%, 10%);
+  --text-secondary: hsl(215, 16%, 47%);
+  --text-muted: hsl(220, 14%, 66%);
+  --border-light: hsl(210, 16%, 93%);
+  --border-medium: hsl(214, 12%, 85%);
+  
+  /* Semantic Token Mapping */
+  --background: var(--bg-main);
+  --foreground: var(--text-primary);
+  --card: var(--bg-section);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--primary-main);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 98%);
+  --secondary-foreground: var(--text-primary);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--selected-nav);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: var(--border-light);
+  --input: var(--border-medium);
+  --ring: var(--primary-main);
+  --chart-1: var(--primary-main);
+  --chart-2: hsl(159, 100%, 36%);
+  --chart-3: hsl(42, 93%, 56%);
+  --chart-4: hsl(147, 79%, 42%);
+  --chart-5: hsl(341, 75%, 51%);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--primary-main);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(211, 51%, 92%);
+  --sidebar-accent-foreground: var(--primary-main);
+  --sidebar-border: var(--border-light);
+  --sidebar-ring: var(--primary-main);
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00), 0px 1px 2px -1px hsl(42, 93%, 54% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00), 0px 1px 2px -1px hsl(42, 93%, 54% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00), 0px 2px 4px -1px hsl(42, 93%, 54% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00), 0px 4px 6px -1px hsl(42, 93%, 54% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00), 0px 8px 10px -1px hsl(42, 93%, 54% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(42, 93%, 54% / 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: hsl(0, 0%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(0, 0%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: var(--primary-main);
+  --primary-foreground: hsl(0, 0%, 9%);
+  --secondary: hsl(0, 0%, 14.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 14.9%);
+  --muted-foreground: hsl(0, 0%, 63.9%);
+  --accent: var(--selected-nav);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 14.9%);
+  --input: hsl(0, 0%, 14.9%);
+  --ring: var(--primary-main);
+  --chart-1: hsl(220, 70%, 50%);
+  --chart-2: hsl(160, 60%, 45%);
+  --chart-3: hsl(30, 80%, 55%);
+  --chart-4: hsl(280, 65%, 60%);
+  --chart-5: hsl(340, 75%, 55%);
+  --sidebar: hsl(0, 0%, 3.9%);
+  --sidebar-foreground: hsl(0, 0%, 98%);
+  --sidebar-primary: var(--primary-main);
+  --sidebar-primary-foreground: hsl(0, 0%, 9%);
+  --sidebar-accent: hsl(0, 0%, 14.9%);
+  --sidebar-accent-foreground: hsl(0, 0%, 98%);
+  --sidebar-border: hsl(0, 0%, 14.9%);
+  --sidebar-ring: var(--primary-main);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Custom mobile optimizations */
+  @media (max-width: 768px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
+
+/* Custom animations and transitions */
+.app-card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.app-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Upcoming badge gradient */
+.upcoming-badge {
+  background: linear-gradient(135deg, hsl(42, 93%, 54%), hsl(42, 93%, 48%));
+}
+
+/* Mobile navigation transitions */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}
