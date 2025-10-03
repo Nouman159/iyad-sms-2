@@ -31,32 +31,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create user in database if not exists
-      await storage.upsertUser({
-        id: user.email,
+      const dbUser = await storage.upsertUser({
         email: user.email,
         firstName: user.name,
         lastName: user.dept,
         profileImageUrl: null,
+        department: user.dept,
+        userType: user.userType,
       });
       
       // Create session
       (req.session as any).user = {
         claims: {
-          sub: user.email,
-          email: user.email,
-          first_name: user.name,
-          last_name: user.dept,
+          sub: dbUser.id,
+          email: dbUser.email,
+          first_name: dbUser.firstName,
+          last_name: dbUser.lastName,
         }
       };
       
       res.json({ 
         message: 'Login successful',
         user: {
-          id: user.email,
-          email: user.email,
-          name: user.name,
-          dept: user.dept,
-          userType: user.userType
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.firstName,
+          dept: dbUser.department,
+          userType: dbUser.userType
         }
       });
       
