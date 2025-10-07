@@ -8,19 +8,22 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
-
-const getOidcConfig = memoize(
-  async () => {
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
-    );
-  },
-  { maxAge: 3600 * 1000 }
+// Check if running in Replit environment
+const isReplitEnvironment = Boolean(
+  process.env.REPLIT_DOMAINS && process.env.REPL_ID,
 );
+
+const getOidcConfig = isReplitEnvironment
+  ? memoize(
+      async () => {
+        return await client.discovery(
+          new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
+          process.env.REPL_ID!,
+        );
+      },
+      { maxAge: 3600 * 1000 },
+    )
+  : null;
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
@@ -38,8 +41,8 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: sessionTtl,
     },
   });
@@ -47,7 +50,7 @@ export function getSession() {
 
 function updateUserSession(
   user: any,
-  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
+  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
 ) {
   user.claims = tokens.claims();
   user.access_token = tokens.access_token;
@@ -55,9 +58,7 @@ function updateUserSession(
   user.expires_at = user.claims?.exp;
 }
 
-async function upsertUser(
-  claims: any,
-) {
+async function upsertUser(claims: any) {
   await storage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
@@ -73,11 +74,22 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const config = await getOidcConfig();
+  // Only setup Replit OAuth if in Replit environment
+  if (!isReplitEnvironment) {
+    console.log(
+      "Replit auth not configured - using form-based and Microsoft auth only",
+    );
+    passport.serializeUser((user: Express.User, cb) => cb(null, user));
+    passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+    return;
+  }
+
+  console.log("Setting up Replit OAuth authentication");
+  const config = await getOidcConfig!();
 
   const verify: VerifyFunction = async (
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-    verified: passport.AuthenticateCallback
+    verified: passport.AuthenticateCallback,
   ) => {
     const user = {};
     updateUserSession(user, tokens);
@@ -93,11 +105,12 @@ export async function setupAuth(app: Express) {
 
   for (const domain of domains) {
     // Use correct protocol and port for localhost development
-    const isLocalhost = domain === 'localhost' || domain === '127.0.0.1';
-    const protocol = isLocalhost ? 'http' : 'https';
-    const port = isLocalhost && process.env.NODE_ENV === 'development' ? ':5000' : '';
+    const isLocalhost = domain === "localhost" || domain === "127.0.0.1";
+    const protocol = isLocalhost ? "http" : "https";
+    const port =
+      isLocalhost && process.env.NODE_ENV === "development" ? ":5000" : "";
     const callbackURL = `${protocol}://${domain}${port}/api/callback`;
-    
+
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -133,7 +146,7 @@ export async function setupAuth(app: Express) {
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
           post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
+        }).href,
       );
     });
   });
@@ -147,7 +160,12 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return next();
   }
 
-  // Fallback to passport.js OAuth authentication
+  // If not in Replit environment, only allow form-based auth
+  if (!isReplitEnvironment) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // Fallback to passport.js OAuth authentication (Replit only)
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user || !user.expires_at) {
@@ -166,7 +184,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const config = await getOidcConfig();
+    const config = await getOidcConfig!();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
     updateUserSession(user, tokenResponse);
     return next();

@@ -63,10 +63,13 @@ export function setupMicrosoftAuth(app: Express) {
 
       // Generate cryptographically random state for CSRF protection
       const state = crypto.randomBytes(32).toString("hex");
-      
+
       // Generate PKCE code verifier and challenge
-      const codeVerifier = crypto.randomBytes(32).toString('base64url');
-      const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
+      const codeVerifier = crypto.randomBytes(32).toString("base64url");
+      const codeChallenge = crypto
+        .createHash("sha256")
+        .update(codeVerifier)
+        .digest("base64url");
 
       // Store state and code verifier in session for verification on callback
       (req.session as any).msAuthState = state;
@@ -100,6 +103,17 @@ export function setupMicrosoftAuth(app: Express) {
       console.log("Microsoft callback received - body:", req.body);
       console.log("Microsoft callback received - query:", req.query);
 
+      // Check for error from Microsoft
+      if (req.body.error) {
+        console.error("Microsoft auth error from provider:", {
+          error: req.body.error,
+          error_description: req.body.error_description,
+        });
+        return res.redirect(
+          `/?error=microsoft_auth_provider_error&details=${encodeURIComponent(req.body.error_description || req.body.error)}`,
+        );
+      }
+
       // Verify state parameter for CSRF protection
       const receivedState = req.body.state;
       const storedState = (req.session as any).msAuthState;
@@ -113,7 +127,7 @@ export function setupMicrosoftAuth(app: Express) {
 
       // Get code verifier from session for PKCE
       const codeVerifier = (req.session as any).msCodeVerifier;
-      
+
       // Clear the state and code verifier from session after verification
       delete (req.session as any).msAuthState;
       delete (req.session as any).msCodeVerifier;
@@ -124,6 +138,9 @@ export function setupMicrosoftAuth(app: Express) {
         return res.redirect("/?error=microsoft_auth_no_code");
       }
 
+      console.log("Attempting to exchange code for token...");
+      console.log("Redirect URI:", getRedirectUri());
+
       const tokenRequest: AuthorizationCodeRequest = {
         code: code,
         scopes: ["user.read", "openid", "profile", "email"],
@@ -132,6 +149,7 @@ export function setupMicrosoftAuth(app: Express) {
       };
 
       const response = await getMsalClient().acquireTokenByCode(tokenRequest);
+      console.log("Token acquired successfully");
 
       if (!response.account) {
         throw new Error("No account information received from Microsoft");
@@ -141,6 +159,8 @@ export function setupMicrosoftAuth(app: Express) {
       const account = response.account;
       const email = account.username; // This is the email
       const name = account.name || email.split("@")[0];
+
+      console.log("User authenticated:", email);
 
       // Determine department and userType based on email domain or default values
       let department = "General";
@@ -178,6 +198,8 @@ export function setupMicrosoftAuth(app: Express) {
         userType,
       });
 
+      console.log("User created/updated in database:", dbUser.id);
+
       // Create session
       (req.session as any).user = {
         claims: {
@@ -188,11 +210,26 @@ export function setupMicrosoftAuth(app: Express) {
         },
       };
 
+      console.log("Session created, redirecting to /apps/forms");
+
       // Redirect to main app
       res.redirect("/apps/forms");
     } catch (error) {
       console.error("Microsoft callback error:", error);
-      res.redirect("/?error=microsoft_auth_failed");
+      console.error(
+        "Error stack:",
+        error instanceof Error ? error.stack : "No stack trace",
+      );
+      console.error(
+        "Error message:",
+        error instanceof Error ? error.message : String(error),
+      );
+
+      // Include more specific error information
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      res.redirect(
+        `/?error=microsoft_auth_failed&details=${encodeURIComponent(errorMsg)}`,
+      );
     }
   });
 }
