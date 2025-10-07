@@ -63,15 +63,22 @@ export function setupMicrosoftAuth(app: Express) {
 
       // Generate cryptographically random state for CSRF protection
       const state = crypto.randomBytes(32).toString("hex");
+      
+      // Generate PKCE code verifier and challenge
+      const codeVerifier = crypto.randomBytes(32).toString('base64url');
+      const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
 
-      // Store state in session for verification on callback
+      // Store state and code verifier in session for verification on callback
       (req.session as any).msAuthState = state;
+      (req.session as any).msCodeVerifier = codeVerifier;
 
       const authCodeUrlParameters: AuthorizationUrlRequest = {
         scopes: ["user.read", "openid", "profile", "email"],
         redirectUri: getRedirectUri(),
         responseMode: "form_post",
-        state: state, // Include state parameter for CSRF protection
+        state: state,
+        codeChallenge: codeChallenge,
+        codeChallengeMethod: "S256",
       };
 
       const authCodeUrl = await getMsalClient().getAuthCodeUrl(
@@ -90,9 +97,9 @@ export function setupMicrosoftAuth(app: Express) {
   app.post("/auth/microsoft/callback", async (req: Request, res: Response) => {
     try {
       // Debug: Log what we received
-      console.log('Microsoft callback received - body:', req.body);
-      console.log('Microsoft callback received - query:', req.query);
-      
+      console.log("Microsoft callback received - body:", req.body);
+      console.log("Microsoft callback received - query:", req.query);
+
       // Verify state parameter for CSRF protection
       const receivedState = req.body.state;
       const storedState = (req.session as any).msAuthState;
@@ -104,12 +111,16 @@ export function setupMicrosoftAuth(app: Express) {
         return res.redirect("/?error=microsoft_auth_security_error");
       }
 
-      // Clear the state from session after verification
+      // Get code verifier from session for PKCE
+      const codeVerifier = (req.session as any).msCodeVerifier;
+      
+      // Clear the state and code verifier from session after verification
       delete (req.session as any).msAuthState;
+      delete (req.session as any).msCodeVerifier;
 
       const code = req.body.code;
       if (!code) {
-        console.error('No authorization code received from Microsoft');
+        console.error("No authorization code received from Microsoft");
         return res.redirect("/?error=microsoft_auth_no_code");
       }
 
@@ -117,6 +128,7 @@ export function setupMicrosoftAuth(app: Express) {
         code: code,
         scopes: ["user.read", "openid", "profile", "email"],
         redirectUri: getRedirectUri(),
+        codeVerifier: codeVerifier,
       };
 
       const response = await getMsalClient().acquireTokenByCode(tokenRequest);
