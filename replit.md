@@ -4,6 +4,15 @@
 
 iSMS is a comprehensive SaaS School Management System built as a modern web application with React frontend and Node.js backend. The system is designed with a modular architecture supporting multiple applications including Forms management, Events, SOPs, Asset tracking, and administrative functions. The application is optimized for mobile deployment through React GO and features a responsive design system with role-based access control.
 
+## Recent Changes
+
+### Microsoft Authentication Integration (October 7, 2025)
+- Added Microsoft OAuth 2.0 login functionality using @azure/msal-node library
+- Implemented secure CSRF protection with state parameter validation
+- Added "Sign in with Microsoft" button to login page
+- Integrated with existing session management system
+- Configuration requires MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -39,8 +48,11 @@ Preferred communication style: Simple, everyday language.
 - **Component Library**: Reusable UI components with consistent styling
 
 ### Authentication & Authorization
-- **OAuth Provider**: Replit OAuth integration
+- **OAuth Providers**: 
+  - Replit OAuth integration
+  - Microsoft OAuth integration (via @azure/msal-node)
 - **Session Management**: Secure HTTP-only cookies with PostgreSQL storage
+- **CSRF Protection**: State parameter validation for OAuth flows
 - **Role-based Access**: User types (HOD, Master Admin) with feature permissions
 - **Route Protection**: Authentication middleware for protected endpoints
 
